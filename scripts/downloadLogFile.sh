@@ -24,20 +24,40 @@ function buildFileName()
     dayToBuild=${1#-}
     if [ $month = 12 ]; then
       year=$(($(date +"%Y") - 1))
-      dayToBuild=$((31 - ${dayToBuild#0}))
+      if [ $dayToBuild = 0 ]; then
+        dayToBuild=31
+      else
+        dayToBuild=$((31 - ${dayToBuild#0}))
+      fi
     elif [ $month = 1 ] || [ $month = 3 ] || [ $month = 5 ] || [ $month = 8 ] || [ $month = 10 ]; then
       year=$(date +"%Y")
-      dayToBuild=$((31 - ${dayToBuild#0}))
+      if [ $dayToBuild = 0 ]; then
+        dayToBuild=31
+      else
+        dayToBuild=$((31 - ${dayToBuild#0}))
+      fi
     elif [ $month = 4 ] || [ $month = 6 ] || [ $month = 7 ] || [ $month = 9 ] || [ $month = 11 ]; then
       year=$(date +"%Y")
-      dayToBuild=$((30 - ${dayToBuild#0}))
+      if [ $dayToBuild = 0 ]; then
+        dayToBuild=30
+      else
+        dayToBuild=$((30 - ${dayToBuild#0}))
+      fi
     else
       # determine leap year
       year=$(date +"%Y")
       if [ $year%4 = 0 ]; then
-        dayToBuild=$((29 - ${dayToBuild#0}))
+        if [ $dayToBuild = 0 ]; then
+          dayToBuild=29
+        else
+          dayToBuild=$((29 - ${dayToBuild#0}))
+        fi
       else
-        dayToBuild=$((28 - ${dayToBuild#0}))
+        if [ $dayToBuild = 0 ]; then
+          dayToBuild=28
+        else
+          dayToBuild=$((28 - ${dayToBuild#0}))
+        fi
       fi
     fi
     month=$(printf "%02d" $month)
