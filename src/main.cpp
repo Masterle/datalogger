@@ -1,42 +1,33 @@
 #include "oekofen/pelletronic.h"
 
-#if ! defined(SHELL)
+#if defined(QAPPLICATION)
 #  include "oekofen/gui/MainWindow.h"
-#else
-#  include "oekofen/pelletronic.h"
 #endif
-
 #include <string>
 #include <vector>
 
-#if ! defined(SHELL)
-#include <QApplication>
-#endif
 int main(int argc, char *argv[])
 {
-  (void)argc;
-  (void)argv;
-#if ! defined(SHELL)
-  QApplication a(argc, argv);
+  #if defined(QAPPLICATION)
+    QApplication a(argc, argv);
+    gui::MainWindow w;
+    w.show();
+    return a.exec();
+  #else
+    (void)argc;
+    (void)argv;
 
-  gui::MainWindow w;
-	w.show();
+    oekofen::Pelletronic pel;
+    std::vector<std::string> logfiles = pel.getLogFiles();
 
-	return a.exec();
-#else
-  oekofen::Pelletronic pel;
-  std::vector<std::string> logfiles = pel.getLogFiles();
+    for(const auto& logfile : logfiles)
+    {
+      pel.setLogFileName(logfile);
+      pel.readLogFile();
+    }
 
-  // load logfiles
-  for (std::vector<std::string>::iterator it = logfiles.begin(); it != logfiles.end(); ++it)
-  {
-    pel.setLogFileName(*it);
-    pel.readLogFile();
-  }
-
-  // save logfiles
-  std::string storeFileName="./logfile.csv";
-  pel.storeLogFile(storeFileName);
-  return 0;
-#endif
+    const std::string storeFileName = "./logfile.csv";
+    pel.storeLogFile(storeFileName);
+    return 0;
+  #endif
 }
